@@ -1,0 +1,31 @@
+service: nodeless
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+      Resource: -"arn:aws:s3:::*"
+
+functions:
+  hello:
+    handler: handler.hello
+    enviroment:
+      bucket: lambda-node-limao
+    events:
+      - s3:
+          bucket: lambda-node-limao
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - sufix: .jpg
+      - s3:
+          bucket: serverless
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - sufix: .png
